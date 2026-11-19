@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BioSentry AI · Stall operator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="workspace">
+    <h1>Open the live demo</h1>
+    <form id="sessionForm">
+      <label for="sessionUrl">HTTPS Gradio session link from the running Kaggle notebook</label>
+      <p><input id="sessionUrl" type="url" required placeholder="https://…gradio.live"></p>
+      <button class="action" type="submit">Open live demo ↗</button>
+      <p id="notice" role="status"></p>
+    </form>
+  </main>
+  <script>
+    const field = document.getElementById("sessionUrl");
+    const notice = document.getElementById("notice");
+    const storageKey = "biosentrySession";
+    try {
+      field.value = localStorage.getItem(storageKey) || "";
+    } catch {}
+
+    document.getElementById("sessionForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const url = new URL(field.value);
+      const validHostname = /^[a-z0-9-]+\.gradio\.live$/i.test(url.hostname);
+      if (url.protocol !== "https:" || !validHostname || url.username || url.password || url.port) {
+        notice.textContent = "Enter the HTTPS gradio.live link from your notebook.";
+        return;
+      }
+      try {
+        localStorage.setItem(storageKey, url.origin);
+      } catch {}
+      notice.textContent = "";
+      window.open(url.origin, "_blank", "noopener,noreferrer");
+    });
+  </script>
+</body>
+</html>
