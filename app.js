@@ -128,7 +128,7 @@ function getApiBase() {
     return stored.trim().replace(/\/+$/, "");
   }
   const host = window.location.hostname || "";
-  if (host.includes("github.io")) {
+  if (host.includes("github.io") || host.includes("vercel.app")) {
     return DEFAULT_TUNNEL_URL;
   }
   return "";
@@ -169,6 +169,10 @@ async function api(route, data, signal) {
     // If session expired mid-session, reset email state and prompt login
     if (r.status === 401 && j.auth_required) {
       email = null;
+      try {
+        localStorage.removeItem("bs_token");
+        sessionStorage.removeItem("bs_token");
+      } catch (e) {}
       auth(false);
     }
     // If onboarding is incomplete, trigger onboarding wizard
@@ -1584,8 +1588,14 @@ function auth(signup = false) {
       }),
       button("Sign out", async () => {
         try { await api("logout", {}); } catch {}
+        try {
+          localStorage.removeItem("bs_token");
+          sessionStorage.removeItem("bs_token");
+          sessionStorage.removeItem("biosentry-guest");
+        } catch (e) {}
         email = null;
-        chats = guest;
+        guest = [];
+        chats = [];
         profileComplete = false;
         dialog.close();
         navigate(null);
