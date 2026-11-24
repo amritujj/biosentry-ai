@@ -257,3 +257,682 @@
 .libBtn:hover {
   background: #102a23;
 }
+
+/* ==========================================================================
+   BioSentry Research Tools & Integrated Chat Styling
+   ========================================================================== */
+
+.composeFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+.composeControls, .composeActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.toolsBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #edf3ec;
+  color: var(--pine);
+  border: 1px solid #c2d4bf;
+  border-radius: 14px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.toolsBtn:hover {
+  background: #dfece0;
+  border-color: #a4be9f;
+}
+.toolsIcon {
+  font-size: 12px;
+  color: #b45309;
+}
+
+/* Tools Dialog */
+dialog.toolsDialog {
+  width: min(560px, 94vw);
+  max-height: 88dvh;
+  border-radius: 16px;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: 0 10px 30px rgba(18, 37, 30, 0.2);
+}
+.toolsSub {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 4px 0 14px;
+}
+.toolsNav {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+}
+.toolsTab {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 550;
+  border-radius: 8px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.toolsTab:hover {
+  background: #edf1e8;
+  color: var(--ink);
+}
+.toolsTab.active {
+  background: var(--pine);
+  color: #fff;
+}
+.presetsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.presetLabel {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.presetChip {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f1f4ed;
+  border: 1px solid #d4decb;
+  color: var(--ink);
+  cursor: pointer;
+}
+.presetChip:hover {
+  background: #e2ebdc;
+}
+.toolsForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+}
+.toolsForm label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--ink);
+}
+.toolsForm input, .toolsForm select {
+  padding: 7px 10px;
+  border: 1px solid #c2cebd;
+  border-radius: 7px;
+  font-size: 13px;
+  background: #fff;
+  color: var(--ink);
+  outline: none;
+}
+.toolsForm input:focus, .toolsForm select:focus {
+  border-color: var(--leaf);
+}
+.studyOptionRow {
+  font-size: 12.5px;
+  color: var(--pine);
+  background: #f4f8f2;
+  padding: 8px 10px;
+  border-radius: 7px;
+  border: 1px solid #d3e2d0;
+}
+.toolsSubmitBtn {
+  margin-top: 6px;
+  padding: 9px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  background: var(--pine);
+  color: #fff;
+  cursor: pointer;
+}
+.toolsSubmitBtn:hover {
+  background: #112e26;
+}
+
+/* Result Cards in Chat */
+.emergencyCard {
+  border: 2px solid #dc2626;
+  background: #fef2f2;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 10px 0 16px;
+  color: #991b1b;
+}
+.emergencyHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.emergencyHead strong {
+  font-size: 16px;
+  color: #b91c1c;
+}
+.emergencyBadge {
+  background: #dc2626;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.emergencyNotice {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #7f1d1d;
+  white-space: pre-line;
+}
+.emergencyActionBox {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  border-radius: 8px;
+  border-left: 4px solid #dc2626;
+  font-size: 13px;
+}
+
+.ragCard {
+  border: 1px solid #cfdbcc;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 10px 0 16px;
+  box-shadow: 0 2px 8px rgba(24, 62, 54, 0.04);
+}
+.ragHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.ragHead h3 {
+  margin: 0;
+  font-size: 15px;
+  color: var(--pine);
+}
+.ragBadge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--leaf);
+  background: #edf7ee;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.ragSummary {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.ragSourceExcerpt {
+  background: #f8faf6;
+  border-left: 3px solid var(--leaf);
+  padding: 8px 12px;
+  border-radius: 0 6px 6px 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #31443b;
+  margin-bottom: 10px;
+}
+.ragSourceMeta {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-bottom: 4px;
+  font-weight: 550;
+}
+.ragActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.noMatchCard {
+  border: 1px solid #e7d8b5;
+  background: #fdfbf7;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 10px 0 16px;
+}
+.noMatchHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #854d0e;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.noMatchText {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #574116;
+}
+.noMatchScope {
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: #786230;
+  font-style: italic;
+}
+
+.toolCard {
+  border: 1px solid #cad7c7;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 10px 0 16px;
+  box-shadow: 0 2px 10px rgba(24, 62, 54, 0.05);
+}
+.toolCardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #edf1eb;
+  padding-bottom: 8px;
+}
+.toolCardHead h3 {
+  margin: 0;
+  font-size: 15px;
+  color: var(--pine);
+}
+.toolMetricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.metricBox {
+  background: #f7faf5;
+  border: 1px solid #e0ebd9;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+.metricVal {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--pine);
+  line-height: 1.2;
+}
+.metricUnit {
+  font-size: 11px;
+  color: var(--muted);
+}
+.metricLabel {
+  font-size: 11.5px;
+  font-weight: 550;
+  color: var(--leaf);
+  margin-top: 4px;
+}
+.badgeHighRisk {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #f87171;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.badgeCaution {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.toolDisclaimer {
+  font-size: 11px;
+  line-height: 1.45;
+  color: #6b7280;
+  background: #f9fafb;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  margin-top: 10px;
+}
+.chartContainer {
+  margin: 12px 0 8px;
+  background: #fafbf9;
+  border: 1px solid #e5ebe2;
+  border-radius: 8px;
+  padding: 12px;
+}
+.chartSvg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+
+/* Caution, Search Skipped, Direct Sourced Answer & Symptom Styles */
+.cautionCard {
+  border: 1px solid #f59e0b;
+  background: #fffbeb;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 10px 0 16px;
+  color: #92400e;
+}
+.cautionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.cautionHead strong {
+  font-size: 15px;
+  color: #b45309;
+}
+.cautionBadge {
+  background: #f59e0b;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.cautionNotice {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #78350f;
+  white-space: pre-line;
+}
+
+.infoCard {
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 10px 0 16px;
+  color: #334155;
+}
+.infoHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 14.5px;
+  margin-bottom: 8px;
+}
+
+.ragDirectAnswer {
+  background: #f4f8f4;
+  border: 1px solid #cfdfd1;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #163328;
+  margin: 8px 0 12px;
+  white-space: pre-line;
+}
+.ragDirectAnswer strong {
+  color: #0f271f;
+}
+.ragBadgeReviewed {
+  font-size: 11px;
+  font-weight: 600;
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.ragBadgeProvisional {
+  font-size: 11px;
+  font-weight: 600;
+  color: #b45309;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.symptomGuidanceCard {
+  border: 1px solid #c2cebd;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 10px 0 16px;
+  box-shadow: 0 2px 8px rgba(24, 62, 54, 0.04);
+}
+.symptomGuidanceHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.symptomGuidanceHead h3 {
+  margin: 0;
+  font-size: 15px;
+  color: var(--pine);
+}
+.symptomGuidanceText {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink);
+  margin-bottom: 10px;
+  white-space: pre-line;
+}
+
+.badgeGroqLive {
+  font-size: 11px;
+  font-weight: 600;
+  color: #15803d;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.entityTag {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin: 2px 4px 2px 0;
+}
+.tagDrug {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+.tagHerb {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+.tagLab {
+  background: #fefce8;
+  color: #a16207;
+  border: 1px solid #fef08a;
+}
+/* Chat reading experience */
+:root { --paper:#faf9f5; --ink:#203930; --muted:#778078; --line:#e5e7de; }
+body { font-family:"DM Sans","Segoe UI",sans-serif; }
+aside { background:#183b32; padding-top:25px; }
+.brand { font-size:25px; margin-bottom:32px; }
+.new { background:#e9ebd8; border-radius:11px; padding:12px 14px; }
+.sidebtn { padding:11px 14px; }
+header { border-bottom:1px solid #eeeee8; }
+#workspace { max-width:850px; }
+#home h1 { letter-spacing:-2px; line-height:1.12; }
+#composer { border-color:#d7ded3; border-radius:22px; padding:17px 18px 12px; box-shadow:0 4px 18px #193a2c0c; }
+#composer:focus-within { border-color:#91a894; box-shadow:0 5px 22px #193a2c10; }
+#prompt { line-height:1.55; resize:none; }
+#send { display:grid; place-items:center; background:#244b3b; }
+.composeControls { gap:10px; }
+#composeMode { color:#78897a; }
+.toolsBtn { font-size:12px; font-weight:500; }
+.conversation #workspace { max-width:850px; }
+.userMsg { background:#edf1e7; border-radius:19px 19px 5px 19px; line-height:1.55; }
+.reply { color:#243c33; line-height:1.75; margin-bottom:38px; }
+.reply > strong { display:block; font:600 15px "DM Sans","Segoe UI",sans-serif; margin-bottom:14px; }
+.reply .ragCard, .reply .symptomGuidanceCard { border:0; background:transparent; padding:0; box-shadow:none; }
+.reply .symptomGuidanceHead, .reply .symptomGuidanceCard > .toolDisclaimer { display:none; }
+.answerText { font-size:15.5px; line-height:1.8; overflow-wrap:anywhere; }
+.answerText p { margin:0 0 1em; white-space:pre-wrap; }
+.answerText strong { font:600 1em/1.7 "DM Sans","Segoe UI",sans-serif; }
+.answerText h3, .answerText h4 { font:600 1.08em/1.4 "DM Sans","Segoe UI",sans-serif; margin:1.4em 0 .55em; }
+.answerText ul,.answerText ol { padding-left:1.5em; margin:.5em 0 1.1em; }
+.answerText li { padding-left:.25em; margin:.3em 0; }
+.answerText pre { overflow:auto; background:#f1f3ed; border-radius:10px; padding:14px; }
+.answerText code { font-family:Consolas,monospace; font-size:.88em; }
+.answerText hr { border:0; border-top:1px solid #e2e7dd; margin:20px 0; }
+.answerTableWrap { overflow-x:auto; margin:14px 0 20px; }
+.answerText table { border-collapse:collapse; width:100%; font-size:14px; }
+.answerText td,.answerText th { border:1px solid #dce3d9; padding:9px 11px; text-align:left; vertical-align:top; }
+.answerText th { background:#f1f4ee; font-weight:600; }
+.answerNotice { color:#6b776c; font-size:13px; }
+.sourceButton { margin-top:4px; border-color:#dbe3d8; border-radius:18px; background:#f5f7f2; color:#4d6852; padding:6px 12px; }
+.replyActions { margin-top:12px; gap:3px; }
+.replyActions .textAction { color:#829087; font-size:12px; }
+.followUp { background:#f4f7ef; border-color:#e0e8dc; padding:20px; }
+.followUp h2 { font-family:var(--serif); }
+@media(max-width:760px) {
+  #workspace { padding-left:20px; padding-right:20px; }
+  .conversation #workspace { padding-top:14px; }
+  .conversation #composeArea { padding-bottom:max(10px,env(safe-area-inset-bottom)); }
+  .answerText { font-size:15px; line-height:1.75; }
+  .userTurn { max-width:90%; }
+}
+
+#toolsBtn[hidden] { display: none; }
+
+/* ── Animated ChatGPT/Gemini-Style Thinking State ── */
+.thinkingReply {
+  margin-bottom: 28px;
+  animation: fadeIn 0.22s ease-out;
+}
+.thinkingCard {
+  background: #f5f7f1;
+  border: 1px solid #dbe2d5;
+  border-radius: 14px;
+  padding: 13px 17px;
+  max-width: 540px;
+  box-shadow: 0 2px 10px rgba(32, 59, 50, 0.05);
+}
+.thinkingHeader {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.thinkingOrb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2d6a4f, #74a070);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(45, 106, 79, 0.35);
+  animation: orbPulse 1.8s infinite ease-in-out;
+}
+.thinkingDot {
+  width: 6px;
+  height: 6px;
+  background: #ffffff;
+  border-radius: 50%;
+  animation: dotBlink 1.4s infinite ease-in-out;
+}
+.thinkingLabel {
+  font-size: 13.5px;
+  font-weight: 550;
+  color: #1e3f31;
+}
+.thinkingShimmer {
+  display: inline-block;
+  background: linear-gradient(90deg, #1e3f31 0%, #527c59 50%, #1e3f31 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmerText 2.4s linear infinite;
+}
+.thinkingSteps {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px dashed #d5ded0;
+}
+.thinkingStepItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: #829283;
+  transition: all 0.25s ease;
+}
+.thinkingStepDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #bcc8b8;
+  transition: all 0.25s ease;
+}
+.thinkingStepItem.active .thinkingStepDot {
+  background: #2d6a4f;
+  box-shadow: 0 0 6px rgba(45, 106, 79, 0.5);
+  transform: scale(1.3);
+}
+.thinkingStepItem.active {
+  color: #1a4231;
+  font-weight: 600;
+}
+.thinkingStepItem.done .thinkingStepDot {
+  background: #407551;
+}
+
+@keyframes orbPulse {
+  0% { transform: scale(0.92); box-shadow: 0 0 4px rgba(45, 106, 79, 0.2); }
+  50% { transform: scale(1.08); box-shadow: 0 0 12px rgba(45, 106, 79, 0.5); }
+  100% { transform: scale(0.92); box-shadow: 0 0 4px rgba(45, 106, 79, 0.2); }
+}
+
+@keyframes dotBlink {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@keyframes shimmerText {
+  to { background-position: 200% center; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,1254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BioSentry AI — Integrated Research Prototype Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --primary: #183e36;
+      --accent: #2e624c;
+      --gold: #b38838;
+      --alert-red: #a72828;
+      --alert-bg: #fdf2f2;
+      --warn-yellow: #9a6700;
+      --warn-bg: #fffbf0;
+      --success-green: #236c3d;
+      --card-bg: #ffffff;
+      --border-color: #dcded3;
+    }
+    .proto-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+    }
+    .proto-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 18px;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 24px;
+    }
+    .proto-brand {
+      font-family: var(--serif);
+      font-size: 28px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .proto-badge {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: #e8eacf;
+      color: #183b31;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+    .proto-nav {
+      display: flex;
+      gap: 8px;
+      background: #ecefe6;
+      padding: 6px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+    .proto-tab {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--muted);
+      background: transparent;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .proto-tab:hover {
+      color: var(--primary);
+      background: rgba(255, 255, 255, 0.5);
+    }
+    .proto-tab.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .proto-panel {
+      display: none;
+    }
+    .proto-panel.active {
+      display: block;
+      animation: arrive 0.25s ease-out;
+    }
+    .proto-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 22px 24px;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 12px rgba(24, 62, 54, 0.04);
+    }
+    .proto-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .proto-grid-2 { grid-template-columns: 1fr; }
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #b5c0af;
+      border-radius: 8px;
+      background: #fafaf8;
+      font-size: 14px;
+    }
+    .btn-action {
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 600;
+      padding: 11px 22px;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: background 0.15s ease;
+      cursor: pointer;
+    }
+    .btn-action:hover {
+      background: #25584b;
+    }
+    .disclaimer-banner {
+      background: #fbf6ec;
+      border-left: 4px solid var(--gold);
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #5c4516;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .alert-box {
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin-top: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .alert-danger {
+      background: var(--alert-bg);
+      border: 1px solid #e8b0b0;
+      color: var(--alert-red);
+    }
+    .alert-warning {
+      background: var(--warn-bg);
+      border: 1px solid #ecd89e;
+      color: var(--warn-yellow);
+    }
+    .alert-success {
+      background: #eef7f0;
+      border: 1px solid #b7e0c2;
+      color: var(--success-green);
+    }
+    .metric-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .badge-clinical {
+      background: #fde8e8;
+      color: #9b1c1c;
+      border: 1px solid #f8b4b4;
+    }
+    .badge-preclinical {
+      background: #fef08a;
+      color: #713f12;
+      border: 1px solid #facc15;
+    }
+    .badge-mechanism {
+      background: #e0e7ff;
+      color: #3730a3;
+      border: 1px solid #c7d2fe;
+    }
+    .badge-unknown {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+    .result-stat {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0ea;
+      font-size: 14px;
+    }
+    .result-stat strong {
+      font-family: var(--serif);
+      font-size: 18px;
+      color: var(--primary);
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+    table.data-table th, table.data-table td {
+      padding: 9px 12px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    table.data-table th {
+      background: #f3f5ee;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .chart-container {
+      width: 100%;
+      height: 320px;
+      margin: 20px 0;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .sub-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 8px;
+    }
+    .sub-tab-btn {
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      background: #f3f4f6;
+      color: #4b5563;
+      border: 1px solid #d1d5db;
+      cursor: pointer;
+    }
+    .sub-tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="proto-container">
+    <header class="proto-header">
+      <div class="proto-brand">
+        <span>BioSentry <i>AI</i></span>
+        <span class="proto-badge">Science Exhibition Research Prototype</span>
+      </div>
+      <div>
+        <a href="/" class="alt" style="text-decoration:none; display:inline-block; font-size:13px;">← Return to Chat</a>
+      </div>
+    </header>
+
+    <div class="disclaimer-banner">
+      <strong>RESEARCH & EDUCATIONAL DEMONSTRATION ONLY:</strong> This prototype implements deterministic mathematical
+      models, graph topological queries, and pharmacokinetic simulations for classroom and science exhibition
+      auditing. It strictly prohibits autonomous clinical diagnosis, disease staging, patient-specific prescription, or
+      dosage adjustment. Qualified physician and clinical pharmacist review is mandatory for all healthcare decisions.
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="proto-nav" role="tablist">
+      <button class="proto-tab active" data-target="tab-rag" role="tab">1. Source RAG & Groq Synthesis</button>
+      <button class="proto-tab" data-target="tab-calc" role="tab">2. Educational Lab Calculator</button>
+      <button class="proto-tab" data-target="tab-graph" role="tab">3. Herb-Drug Collision Network</button>
+      <button class="proto-tab" data-target="tab-tpsm" role="tab">4. TPSM Simulation Timeline</button>
+      <button class="proto-tab" data-target="tab-arch" role="tab">5. Architecture & Provenance</button>
+    </nav>
+
+    <!-- PANEL 1: CANONICAL SOURCE RAG & SAFETY INTERCEPT WITH GROQ CLOUD SYNTHESIS -->
+    <section id="tab-rag" class="proto-panel active">
+      <div class="proto-card">
+        <h2 style="font-size:24px; margin-bottom:8px;">Source-Linked Classical Retrieval & Deterministic Safety Interception</h2>
+        <p style="color:var(--muted); font-size:14px; margin-bottom:18px;">
+          Demonstrates upstream red-flag triage across severe acute clinical patterns, followed by citation-grounded RAG
+          exploration over the verified 20-volume classical Ayurvedic canon (13,837 pages) with optional Groq LLM synthesis.
+        </p>
+
+        <div class="proto-grid-2">
+          <div class="form-group">
+            <label for="ragLang">Query Language</label>
+            <select id="ragLang">
+              <option value="en">English</option>
+              <option value="hi">हिंदी (Devanagari)</option>
+              <option value="hinglish">Hinglish (Conversational)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ragModel">Language Model Provider / Configuration</label>
+            <select id="ragModel">
+              <option value="openai/gpt-oss-120b">Groq Cloud: openai/gpt-oss-120b (Default Candidate)</option>
+              <option value="llama-3.3-70b-versatile">Groq Cloud: llama-3.3-70b-versatile (Comparison Candidate)</option>
+              <option value="rag_only">Canonical RAG Only (No Cloud LLM Synthesis)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ragQuery">Clinical Inquiry or Botanical Research Question</label>
+          <input type="text" id="ragQuery" value="Sudden severe crushing chest pain radiating to left arm" placeholder="Try an emergency query or a botanical query like 'Adrak botanical identity'...">
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
+          <button class="alt" onclick="setRagPreset('Sudden severe crushing chest pain radiating to left arm', 'en')">Chest Pain (Red Flag)</button>
+          <button class="alt" onclick="setRagPreset('Child has purple lips and air hunger', 'en')">Air Hunger (Emergency)</button>
+          <button class="alt" onclick="setRagPreset('Adrak ka botanical naam aur prayojya anga kya hai?', 'hinglish')">Adrak (Hinglish Botanical)</button>
+          <button class="alt" onclick="setRagPreset('अश्वगंधा के रसायन गुण चरक संहिता में क्या हैं?', 'hi')">अश्वगंधा (हिंदी श्लोक खोज)</button>
+          <button class="alt" onclick="setRagPreset('Bhavaprakasha mein apple cider vinegar aur green coffee bean ka shloka kahan hai?', 'hinglish')">Fad Diet (Honest Absence)</button>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-action" onclick="runRagQuery()">Evaluate Query & Ground</button>
+          <button class="alt" onclick="runGroqComparison()">Compare Groq Models (120B vs 70B)</button>
+        </div>
+
+        <div id="ragResults" style="margin-top:20px; display:none;"></div>
+      </div>
+    </section>
+
+    <!-- PANEL 2: EDUCATIONAL LAB CALCULATOR -->
+    <section id="tab-calc" class="proto-panel">
+      <div class="proto-card">
+        <h2 style="font-size:24px; margin-bottom:8px;">Educational Renal Lab Calculator</h2>
+        <p style="color:var(--muted); font-size:14px; margin-bottom:18px;">
+          Deterministic implementations of the CKD-EPI 2021 Race-Free Creatinine Equation (Inker et al., NEJM 2021)
+          and the Cockcroft-Gault Creatinine Clearance Equation (1976) with strict adult demographic validation (Age ≥ 18).
+        </p>
+        <div class="proto-grid-2">
+          <div>
+            <div class="form-group">
+              <label for="calcAge">Age (Years, Adult ≥ 18)</label>
+              <input type="number" id="calcAge" value="60" min="18" max="110" step="1">
+            </div>
+            <div class="form-group">
+              <label for="calcSex">Biological Sex</label>
+              <select id="calcSex">
+                <option value="male">Male (κ = 0.9, α = -0.302)</option>
+                <option value="female">Female (κ = 0.7, α = -0.241, factor = 1.012)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="calcScr">Serum Creatinine (Scr)</label>
+              <input type="number" id="calcScr" value="1.2" min="0.1" max="25.0" step="0.1">
+            </div>
+            <div class="form-group">
+              <label for="calcUnit">Creatinine Units</label>
+              <select id="calcUnit">
+                <option value="mg/dL">mg/dL</option>
+                <option value="umol/L">µmol/L (Divisor: 88.42)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="calcWeight">Patient Weight (kg, for Cockcroft-Gault)</label>
+              <input type="number" id="calcWeight" value="70.0" min="20" max="300" step="0.5">
+            </div>
+            <button class="btn-action" onclick="runCalculator()">Calculate Renal Metrics</button>
+          </div>
+          <div>
+            <div id="calcOutput" style="background:#fafbf7; border:1px solid #e1e5da; border-radius:12px; padding:18px; min-height:260px;">
+              <h3 style="font-size:16px; margin-top:0; color:var(--primary);">Calculation Output</h3>
+              <p style="font-size:13px; color:var(--muted);">Enter demographic parameters to calculate estimated eGFR and CrCl.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 3: HERB-DRUG COLLISION NETWORK (10 Herbs & 10 Medicines) -->
+    <section id="tab-graph" class="proto-panel">
+      <div class="proto-card">
+        <h2 style="font-size:24px; margin-bottom:8px;">Herb-Drug Collision Graph & Topological Centrality</h2>
+        <p style="color:var(--muted); font-size:14px; margin-bottom:18px;">
+          Audited collision detection across 10 classical Ayurvedic botanical agents and 10 common medicines with 5-tier evidence ratings
+          (Pair-specific human evidence, Preclinical/laboratory evidence, Proposed mechanism, No match in catalog, Review pending),
+          multi-hop ripple exploration, and deterministic PageRank hubness.
+        </p>
+        <div class="proto-grid-2">
+          <div>
+            <div class="form-group">
+              <label for="graphHerb">Botanical Agent / Herbal Formulation</label>
+              <select id="graphHerb">
+                <!-- 10 Classical Ayurvedic Herbs -->
+                <option value="ashwagandha">1. Ashwagandha (Withania somnifera)</option>
+                <option value="curcumin">2. Curcumin / Haridra (Curcuma longa)</option>
+                <option value="licorice">3. Licorice (Yashtimadhu / Glycyrrhiza glabra)</option>
+                <option value="arjuna">4. Arjuna (Terminalia arjuna)</option>
+                <option value="tulsi">5. Tulsi (Ocimum sanctum)</option>
+                <option value="triphala">6. Triphala (Emblica officinalis + Terminalia chebula + bellirica)</option>
+                <option value="garlic">7. Garlic / Lashuna (Allium sativum)</option>
+                <option value="brahmi">8. Brahmi (Bacopa monnieri)</option>
+                <option value="guggulu">9. Guggulu (Commiphora mukul)</option>
+                <option value="guduchi">10. Guduchi / Giloy (Tinospora cordifolia)</option>
+                <!-- Reference Phytomedicinals -->
+                <option value="st_johns_wort">Ref. St. John's Wort (Hypericum perforatum)</option>
+                <option value="ginkgo">Ref. Ginkgo Biloba</option>
+                <option value="unknown_herb">Uncatalogued / Unknown Botanical (Safety Test)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="graphDrug">Pharmaceutical Drug Entity (10 Common Medicines)</label>
+              <select id="graphDrug">
+                <option value="warfarin">1. Warfarin (Oral Anticoagulant)</option>
+                <option value="digoxin">2. Digoxin (Cardiac Glycoside Inotrope)</option>
+                <option value="cyclosporine">3. Cyclosporine (Calcineurin Immunosuppressant)</option>
+                <option value="alprazolam">4. Alprazolam (Benzodiazepine Sedative)</option>
+                <option value="sertraline">5. Sertraline (SSRI Antidepressant)</option>
+                <option value="levothyroxine">6. Levothyroxine (Synthetic Thyroid Hormone)</option>
+                <option value="metformin">7. Metformin (Biguanide Antidiabetic)</option>
+                <option value="aspirin">8. Aspirin (Antiplatelet / NSAID)</option>
+                <option value="clopidogrel">9. Clopidogrel (Antiplatelet P2Y12)</option>
+                <option value="hydrochlorothiazide">10. Hydrochlorothiazide (Thiazide Diuretic)</option>
+                <!-- Additional Common Drugs -->
+                <option value="metoprolol">Metoprolol (Beta-1 Blocker)</option>
+                <option value="atorvastatin">Atorvastatin (Statin)</option>
+                <option value="tacrolimus">Tacrolimus (Immunosuppressant)</option>
+                <option value="iron_sulfate">Ferrous Sulfate (Oral Iron)</option>
+              </select>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn-action" onclick="runCollisionCheck()">Check Pair Collision</button>
+              <button class="alt" onclick="runRippleSearch()">Explore Ripple Network</button>
+              <button class="alt" onclick="loadCatalogAudit()">Audit 10x10 Catalog</button>
+            </div>
+          </div>
+          <div>
+            <div id="graphOutput" style="background:#fafbf7; border:1px solid #e1e5da; border-radius:12px; padding:18px; min-height:260px;">
+              <h3 style="font-size:16px; margin-top:0; color:var(--primary);">Collision Analysis</h3>
+              <p style="font-size:13px; color:var(--muted);">Select botanical and drug entities to evaluate interactions, study populations, and evidence types.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;">
+          <h3 style="font-size:18px; color:var(--primary); margin-bottom:6px;">Network Topological Centrality (PageRank d=0.85)</h3>
+          <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">
+            <strong>Important Scientific Distinction:</strong> PageRank reflects graph connectivity and research hubness;
+            it DOES NOT represent human clinical acuity, patient mortality risk, or disease severity.
+          </p>
+          <div id="pagerankTable">Loading network topology...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 4: TIME-BASED TPSM SIMULATION (Empirical Human Study vs Synthetic ODE) -->
+    <section id="tab-tpsm" class="proto-panel">
+      <div class="proto-card">
+        <h2 style="font-size:24px; margin-bottom:8px;">Temporal Pharmacokinetic Simulation (TPSM)</h2>
+        <p style="color:var(--muted); font-size:14px; margin-bottom:18px;">
+          Demonstrates pharmacokinetic interaction timelines: Choose between a published peer-reviewed human clinical trial demonstration
+          (Johne et al. 1999 / Jiang et al. 2004) and interactive educational 2-compartment Runge-Kutta 4th order (RK4) differential equation simulations.
+        </p>
+
+        <!-- Sub-tabs for TPSM Demonstration -->
+        <div class="sub-tabs">
+          <button class="sub-tab-btn active" id="subTabHuman" onclick="switchTpsmMode('human')">Published Human Clinical Study Demonstration</button>
+          <button class="sub-tab-btn" id="subTabSynthetic" onclick="switchTpsmMode('synthetic')">Educational Synthetic ODE Simulation</button>
+        </div>
+
+        <!-- MODE 1: PUBLISHED HUMAN CLINICAL STUDY DEMONSTRATION -->
+        <div id="tpsmHumanSection">
+          <div class="form-group" style="max-width:500px;">
+            <label for="humanStudySelect">Select Published Human Clinical Trial</label>
+            <select id="humanStudySelect" onchange="runHumanStudyDemo()">
+              <option value="digoxin_st_johns_wort">Digoxin + St. John's Wort (Johne et al., Clin Pharmacol Ther 1999, n=25)</option>
+              <option value="warfarin_st_johns_wort">Warfarin + St. John's Wort (Jiang et al., Br J Clin Pharmacol 2004, n=12)</option>
+            </select>
+          </div>
+          <div id="humanStudyOutput" style="background:#fafbf7; border:1px solid #e1e5da; border-radius:12px; padding:18px; margin-top:14px;">
+            Loading human clinical study demonstration...
+          </div>
+        </div>
+
+        <!-- MODE 2: EDUCATIONAL SYNTHETIC ODE SIMULATION -->
+        <div id="tpsmSyntheticSection" style="display:none;">
+          <div class="proto-grid-2">
+            <div>
+              <div class="form-group">
+                <label for="tpsmDrug">Pharmaceutical Drug Profile</label>
+                <select id="tpsmDrug" onchange="updateDrugDefaults()">
+                  <option value="warfarin">Warfarin (Dose: 5 mg, Vd: 10 L, CL: 0.20 L/h, narrow window)</option>
+                  <option value="digoxin">Digoxin (Dose: 0.25 mg, Vd: 350 L, CL: 7.50 L/h, narrow window)</option>
+                  <option value="midazolam">Midazolam (Dose: 7.5 mg, Vd: 80 L, CL: 24.0 L/h, CYP3A4 probe)</option>
+                  <option value="metoprolol">Metoprolol (Dose: 50 mg, Vd: 250 L, CL: 45.0 L/h)</option>
+                  <option value="atorvastatin">Atorvastatin (Dose: 20 mg, Vd: 380 L, CL: 42.0 L/h)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="tpsmHerb">Co-administered Botanical Modifier</label>
+                <select id="tpsmHerb">
+                  <option value="st_johns_wort">St. John's Wort (CYP3A4/P-gp Inducer, θ = 1.80, φ = 0.85)</option>
+                  <option value="curcumin_piperine">Curcumin + Piperine (CYP3A4/P-gp Inhibitor, θ = 0.60, φ = 1.25)</option>
+                  <option value="licorice">Licorice / Yashtimadhu (Mild Inhibitor, θ = 0.75, φ = 1.0)</option>
+                  <option value="ashwagandha">Ashwagandha (Mild Modulator, θ = 0.90, φ = 1.0)</option>
+                </select>
+              </div>
+              <div class="proto-grid-2">
+                <div class="form-group">
+                  <label for="tpsmDose">Administered Dose (mg)</label>
+                  <input type="number" id="tpsmDose" value="5.0" step="0.5">
+                </div>
+                <div class="form-group">
+                  <label for="tpsmHours">Time Window (Hours)</label>
+                  <input type="number" id="tpsmHours" value="24" min="6" max="72" step="6">
+                </div>
+              </div>
+              <button class="btn-action" onclick="runTpsmSimulation()">Simulate Synthetic Trajectory</button>
+            </div>
+            <div>
+              <div id="tpsmMetrics" style="background:#fafbf7; border:1px solid #e1e5da; border-radius:12px; padding:18px; min-height:260px;">
+                <h3 style="font-size:16px; margin-top:0; color:var(--primary);">Simulation Metrics</h3>
+                <p style="font-size:13px; color:var(--muted);">Run simulation to evaluate Cmax, AUC, half-life shifts, and therapeutic window status.</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:20px;">
+            <h3 style="font-size:18px; color:var(--primary); margin-bottom:4px;">Plasma Concentration-Time Curve (C vs Time)</h3>
+            <div class="chart-container" id="svgChartWrapper">
+              <svg id="pkChart" width="100%" height="100%" viewBox="0 0 800 280"></svg>
+            </div>
+            <div style="display:flex; justify-content:center; gap:24px; font-size:12px; color:var(--muted);">
+              <div><span style="display:inline-block; width:14px; height:3px; background:#183e36; vertical-align:middle; margin-right:5px;"></span> Baseline Drug Alone</div>
+              <div><span style="display:inline-block; width:14px; height:3px; background:#b3261e; vertical-align:middle; margin-right:5px;"></span> Herb-Modulated Co-exposure</div>
+              <div><span style="display:inline-block; width:14px; height:1px; border-top:2px dashed #d97706; vertical-align:middle; margin-right:5px;"></span> Therapeutic Threshold (MTC/MEC)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 5: ARCHITECTURE & PROVENANCE -->
+    <section id="tab-arch" class="proto-panel">
+      <div class="proto-card">
+        <h2 style="font-size:24px; margin-bottom:8px;">System Architecture & Provenance Manifest</h2>
+        <p style="color:var(--muted); font-size:14px; margin-bottom:18px;">
+          Independent implementation mapping following the scientific brief and BioMy-style concepts without code copying.
+        </p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Conceptual Subsystem</th>
+              <th>BioSentry Implementation Module</th>
+              <th>Scientific Methodology</th>
+              <th>Operational Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1. Classical Canon RAG</td>
+              <td><code>biosentry_rag_engine.py</code></td>
+              <td>SQLite FTS5 full-text matching over 20 canonical Ayurvedic books (13,837 pages)</td>
+              <td><span class="metric-badge badge-clinical">Fully Operational (Read-Only Δ=0)</span></td>
+            </tr>
+            <tr>
+              <td>2. Deterministic Safety Triage</td>
+              <td><code>biosentry_safety_triage.py</code></td>
+              <td>Dual-layer acute symptom router (Chest Pain, Stroke, Anaphylaxis, Pediatric Distress)</td>
+              <td><span class="metric-badge badge-clinical">Fully Operational</span></td>
+            </tr>
+            <tr>
+              <td>3. Groq Cloud LLM Synthesis</td>
+              <td><code>biosentry_groq_client.py</code></td>
+              <td>Zero-leakage inference over openai/gpt-oss-120b &amp; llama-3.3-70b-versatile with loud failure</td>
+              <td><span class="metric-badge badge-clinical">Fully Operational</span></td>
+            </tr>
+            <tr>
+              <td>4. Herb-Drug Collision Graph</td>
+              <td><code>biosentry_collision_graph.py</code></td>
+              <td>10 Ayurvedic herbs, 10 drugs, 5 evidence types, PageRank (d=0.85), Golden Safety Invariant</td>
+              <td><span class="metric-badge badge-clinical">Fully Operational (23 Reviewed Pairs)</span></td>
+            </tr>
+            <tr>
+              <td>5. Temporal PK Simulator (TPSM)</td>
+              <td><code>biosentry_tpsm_simulator.py</code></td>
+              <td>Empirical human study demonstration (Johne/Jiang) + Synthetic RK4 ODE simulations</td>
+              <td><span class="metric-badge badge-clinical">Fully Operational (Dual Mode)</span></td>
+            </tr>
+            <tr>
+              <td>6. BioMistral LLM / DoRA Adapter</td>
+              <td><code>kaggle_controlled_decoding_eval.py</code></td>
+              <td>Controlled decoding anti-loop harness; separate path and explicit CUDA hardware gating</td>
+              <td><span class="metric-badge badge-preclinical">Research Pilot (GPU Cloud-Gated)</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="alert-box alert-warning" style="margin-top:20px;">
+          <strong>BioMy Teammate Repository Audit:</strong> Inspected public repository at commit <code>b4585bfbc3eff9fba63986f8c560709ab86783e6</code>.
+          License status: <em>None (No LICENSE file present)</em>. To uphold full academic and software intellectual property standards,
+          all algorithms, differential equations, and curated catalogs in this BioSentry prototype were authorially developed
+          independently without code or raw data incorporation.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Tab Switching Logic
+    const tabs = document.querySelectorAll('.proto-tab');
+    const panels = document.querySelectorAll('.proto-panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        const target = document.getElementById(tab.getAttribute('data-target'));
+        if (target) target.classList.add('active');
+      });
+    });
+
+    // Panel 1: RAG Preset Helper
+    function setRagPreset(text, lang = 'en') {
+      document.getElementById('ragQuery').value = text;
+      document.getElementById('ragLang').value = lang;
+      runRagQuery();
+    }
+
+    async function runRagQuery() {
+      const q = document.getElementById('ragQuery').value.trim();
+      const lang = document.getElementById('ragLang').value;
+      const model = document.getElementById('ragModel').value;
+      const out = document.getElementById('ragResults');
+      if (!q) return;
+      out.style.display = 'block';
+      out.innerHTML = '<p style="color:var(--muted);">Evaluating query against deterministic safety router and source corpus...</p>';
+
+      try {
+        const resp = await fetch('/api/query', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({query: q, language: lang, model: model, use_groq: model !== 'rag_only'})
+        });
+        const data = await resp.json();
+
+        if (data.is_emergency) {
+          out.innerHTML = `
+            <div class="alert-box alert-danger">
+              <strong style="font-size:16px;">EMERGENCY SAFETY INTERCEPTION ACTIVATED</strong>
+              <p style="margin:8px 0;"><strong>Category:</strong> ${data.triage.escalation_category} (Severity: ${data.triage.confidence_score})</p>
+              <div style="background:#fff; border:1px solid #f0a0a0; border-radius:8px; padding:12px; margin-top:8px; font-weight:600; color:#851a1a;">
+                ${data.response}
+              </div>
+              <p style="font-size:12px; margin-top:8px; color:#601515;">
+                Zero botanical remedies recommended. Immediate hospital referral issued.
+              </p>
+            </div>
+          `;
+        } else if (data.rag_status === 'NO_CANONICAL_SOURCE_FOUND' || (data.sources && data.sources.length === 0)) {
+          out.innerHTML = `
+            <div class="alert-box alert-warning">
+              <strong style="font-size:15px;">HONEST ABSENCE REPORTED</strong>
+              <p style="margin:8px 0;">${data.message || 'No matching classical passages found in the 20 indexed canonical treatises.'}</p>
+              <small style="color:#78350f;">Absence of index match in this library does not prove non-existence across all historical literature.</small>
+            </div>
+          `;
+        } else {
+          let synthesisHtml = '';
+          if (data.groq_synthesis) {
+            synthesisHtml = `
+              <div style="background:#ffffff; border:1px solid #c7dfcf; border-radius:8px; padding:12px 14px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <strong style="color:var(--primary); font-size:14px;">Synthesized Grounded Answer:</strong>
+                  <span class="metric-badge badge-clinical" style="background:#e8f4ec; color:#183e36; border-color:#183e3630;">${data.model_label || 'Groq Cloud LLM'}</span>
+                </div>
+                <p style="font-size:13px; line-height:1.6; margin:4px 0; color:#1f2937;">${data.groq_synthesis}</p>
+              </div>
+            `;
+          } else if (data.groq_error) {
+            synthesisHtml = `
+              <div style="background:#fffbf0; border:1px solid #ecd89e; border-radius:8px; padding:10px 14px; margin-bottom:12px; font-size:12px; color:#92400e;">
+                <strong>Groq LLM Notice:</strong> Synthesis offline (${data.groq_error}). Presenting raw authentic source excerpts directly without fabricated fallback.
+              </div>
+            `;
+          }
+
+          let sourcesHtml = '';
+          if (data.sources && data.sources.length > 0) {
+            sourcesHtml = '<div style="margin-top:14px;"><h4 style="margin-bottom:8px;">Retrieved Canonical Passages:</h4>';
+            data.sources.forEach((s, idx) => {
+              const bookTitle = s.title || s.book_title || s.book_id;
+              const pageNo = s.physical_pdf_page || s.printed_page || s.page_no;
+              const pdfLink = s.pdf_link || `/api/library/pdf?book_id=${s.book_id}#page=${pageNo}`;
+              sourcesHtml += `
+                <div style="background:#f7f8f3; border:1px solid #dcded3; border-radius:8px; padding:10px 14px; margin-bottom:8px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                    <strong style="color:var(--primary); font-size:13px;">[${idx+1}] ${bookTitle}</strong>
+                    <span style="font-size:12px;">Physical PDF Page ${pageNo}</span>
+                  </div>
+                  <span style="display:inline-block; background:#fef3c7; color:#92400e; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; margin:4px 0; border:1px solid #f59e0b40; text-transform:uppercase;">
+                    Provisional / Unreviewed OCR
+                  </span>
+                  <p style="font-size:12px; margin:4px 0 6px; color:#333;">${s.snippet || s.text_clean || ''}</p>
+                  <a href="${pdfLink}" target="_blank" rel="noopener" style="font-size:12px; font-weight:600; color:var(--primary); text-decoration:underline;">
+                    Open Original PDF Page ↗
+                  </a>
+                </div>
+              `;
+            });
+            sourcesHtml += '</div>';
+          }
+
+          out.innerHTML = `
+            <div class="alert-box alert-success">
+              <strong style="font-size:15px;">CANONICAL RESEARCH RETRIEVAL COMPLETE</strong>
+              <p style="margin:4px 0 8px;"><strong>Triage Status:</strong> ${data.triage.triage_status} | <strong>Passages Found:</strong> ${data.retrieved_count || 0}</p>
+              ${synthesisHtml}
+              ${sourcesHtml}
+              <div class="disclaimer-banner" style="margin-top:12px; margin-bottom:0;">
+                ${data.research_disclaimer}
+              </div>
+            </div>
+          `;
+        }
+      } catch (err) {
+        out.innerHTML = `<div class="alert-box alert-danger">Error: ${err.message}</div>`;
+      }
+    }
+
+    async function runGroqComparison() {
+      const q = document.getElementById('ragQuery').value.trim();
+      const lang = document.getElementById('ragLang').value;
+      const out = document.getElementById('ragResults');
+      if (!q) return;
+      out.style.display = 'block';
+      out.innerHTML = '<p style="color:var(--muted);">Running comparative evaluation between openai/gpt-oss-120b and llama-3.3-70b-versatile...</p>';
+
+      try {
+        // Step 1: Retrieve grounded sources first
+        const sResp = await fetch('/api/rag/search', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({query: q, limit: 3})
+        });
+        const sData = await sResp.json();
+        const sources = sData.results || [];
+
+        // Step 2: Compare Groq models
+        const cResp = await fetch('/api/groq/compare', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({query: q, sources: sources, language: lang})
+        });
+        const cData = await cResp.json();
+
+        const comp = cData.model_comparison || {};
+        let compTableHtml = `
+          <h4 style="margin-top:0;">Groq Cloud LLM Comparative Evaluation (Held-Out Query)</h4>
+          <p style="font-size:12px; color:var(--muted);">Query: <em>${q}</em> (${lang}) | Sources Provided: ${sources.length}</p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Model ID</th>
+                <th>Status</th>
+                <th>Latency (ms)</th>
+                <th>Tokens Used</th>
+                <th>Citation Grounding</th>
+                <th>Response Preview</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        for (const [mName, mInfo] of Object.entries(comp)) {
+          compTableHtml += `
+            <tr>
+              <td><code>${mName}</code></td>
+              <td>${mInfo.status === 'success' ? '<span style="color:green;font-weight:600;">Success</span>' : `<span style="color:red;font-weight:600;">${mInfo.error_code || 'Offline'}</span>`}</td>
+              <td>${mInfo.latency_ms ? mInfo.latency_ms + ' ms' : 'N/A'}</td>
+              <td>${mInfo.usage ? (mInfo.usage.total_tokens || JSON.stringify(mInfo.usage)) : 'N/A'}</td>
+              <td>${mInfo.has_citations ? 'Verified' : 'None'}</td>
+              <td style="font-size:11px;">${mInfo.synthesis_preview || (mInfo.error_code ? 'Inference halted cleanly without hallucination' : 'No preview')}</td>
+            </tr>
+          `;
+        }
+
+        compTableHtml += '</tbody></table>';
+
+        out.innerHTML = `
+          <div class="alert-box alert-success">
+            ${compTableHtml}
+            <div class="disclaimer-banner" style="margin-top:12px; margin-bottom:0;">
+              Loud failure & anti-fabrication invariant active: Groq API key is accessed only in the server environment. On failure, no prewritten diagnosis or false citations are generated.
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        out.innerHTML = `<div class="alert-box alert-danger">Groq Comparison Error: ${err.message}</div>`;
+      }
+    }
+
+    // Panel 2: Lab Calculator
+    async function runCalculator() {
+      const age = parseFloat(document.getElementById('calcAge').value);
+      const sex = document.getElementById('calcSex').value;
+      const scr = parseFloat(document.getElementById('calcScr').value);
+      const units = document.getElementById('calcUnit').value;
+      const weight = parseFloat(document.getElementById('calcWeight').value);
+      const out = document.getElementById('calcOutput');
+
+      try {
+        const resp = await fetch('/api/calculator/unified', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({age, sex, serum_creatinine: scr, units, weight_kg: weight})
+        });
+        const data = await resp.json();
+
+        if (data.error) {
+          out.innerHTML = `<div class="alert-box alert-danger"><strong>Validation Error:</strong> ${data.error}</div>`;
+          return;
+        }
+
+        const egfr = data.ckd_epi_egfr;
+        const crcl = data.cockcroft_gault_crcl;
+
+        out.innerHTML = `
+          <h3 style="font-size:18px; margin-top:0; color:var(--primary);">Calculated Renal Function Metrics</h3>
+          <div class="result-stat">
+            <span>CKD-EPI 2021 Race-Free eGFR:</span>
+            <strong>${egfr.value} <small style="font-size:12px; font-weight:normal;">${egfr.units}</small></strong>
+          </div>
+          <div class="result-stat">
+            <span>KDIGO Informational Stage:</span>
+            <span class="metric-badge badge-preclinical">${egfr.stage_label}</span>
+          </div>
+          <div class="result-stat">
+            <span>Cockcroft-Gault CrCl:</span>
+            <strong>${crcl ? crcl.value + ' <small style="font-size:12px; font-weight:normal;">mL/min</small>' : 'N/A'}</strong>
+          </div>
+
+          <div class="alert-box alert-warning" style="margin-top:14px; font-size:12px;">
+            <strong>Pharmacological Advisory:</strong> ${egfr.safety_advisory}
+          </div>
+          <div class="disclaimer-banner" style="margin-top:10px; margin-bottom:0;">
+            ${data.educational_disclaimer}
+          </div>
+        `;
+      } catch (err) {
+        out.innerHTML = `<div class="alert-box alert-danger">Calculation Error: ${err.message}</div>`;
+      }
+    }
+
+    // Panel 3: Collision Graph & PageRank
+    async function runCollisionCheck() {
+      const herb = document.getElementById('graphHerb').value;
+      const drug = document.getElementById('graphDrug').value;
+      const out = document.getElementById('graphOutput');
+
+      try {
+        const resp = await fetch('/api/graph/collision', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({herb, drug})
+        });
+        const data = await resp.json();
+
+        let badgeClass = 'badge-unknown';
+        if (data.evidence_type === 'PAIR_SPECIFIC_HUMAN_EVIDENCE' || data.evidence_tier === 'HUMAN_CLINICAL_TRIAL') badgeClass = 'badge-clinical';
+        else if (data.evidence_type === 'PRECLINICAL_OR_LABORATORY' || data.evidence_tier === 'PRECLINICAL_OR_IN_VITRO') badgeClass = 'badge-preclinical';
+        else if (data.evidence_type === 'PROPOSED_MECHANISM') badgeClass = 'badge-mechanism';
+
+        if (data.collision_detected) {
+          const item = data.interaction;
+          out.innerHTML = `
+            <div class="alert-box alert-danger">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                <strong style="font-size:16px;">COLLISION DETECTED</strong>
+                <span class="metric-badge ${badgeClass}">${item.evidence_type || item.evidence_tier}</span>
+              </div>
+              <p style="margin:8px 0;"><strong>Herb / Botanical:</strong> ${item.herb} (<em>${item.botanical_name}</em>) [Preparation: ${item.preparation}]</p>
+              <p style="margin:6px 0;"><strong>Drug:</strong> ${item.drug} | <strong>Severity:</strong> ${item.severity}</p>
+              <p style="margin:6px 0;"><strong>Observed Clinical/Lab Effect:</strong> ${item.observed_effect}</p>
+              <p style="margin:6px 0;"><strong>Mechanism:</strong> ${item.mechanism}</p>
+              <p style="margin:6px 0;"><strong>Study Population:</strong> ${item.study_population} | <strong>Age Context:</strong> ${item.age_context}</p>
+              <p style="margin:6px 0;"><strong>Review Status:</strong> <span style="font-weight:700; color:${item.review_status === 'source_reviewed' ? '#065f46':'#92400e'}">${item.review_status.toUpperCase()}</span></p>
+              ${item.ayurvedic_context ? `
+                <div style="background:#fff; border:1px solid #e0e0d5; border-radius:8px; padding:8px 12px; margin-top:8px; font-size:12px;">
+                  <strong>Classical Context:</strong> ${item.ayurvedic_context.sanskrit_name} | Virya: ${item.ayurvedic_context.virya} | Vipaka: ${item.ayurvedic_context.vipaka} | Prabhava: ${item.ayurvedic_context.prabhava}
+                </div>
+              ` : ''}
+              <div style="margin-top:8px; font-size:11px; color:#4b5563;">
+                <strong>Source Evidence:</strong> ${item.citations.join('; ')} 
+                ${item.source_url_or_page ? `<br><a href="${item.source_url_or_page}" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline;">View Published Study ↗</a>` : ''}
+              </div>
+            </div>
+          `;
+        } else {
+          out.innerHTML = `
+            <div class="alert-box alert-warning">
+              <strong style="font-size:15px;">GOLDEN SAFETY INVARIANT ENFORCED (NO MATCH IN CATALOG)</strong>
+              <p style="margin:8px 0; font-weight:600;">${data.safety_alert}</p>
+              <p style="font-size:12px; color:#78350f;">
+                Unlisted or uncatalogued pairs are NEVER marked as 'safe' or severity 'none'. Absence of documentation does not guarantee clinical compatibility.
+              </p>
+              <p style="font-size:12px; margin-top:6px;"><strong>Evidence Status:</strong> <code>NO_MATCH_IN_CATALOG</code> | <strong>Review:</strong> <code>REVIEW_PENDING</code></p>
+            </div>
+          `;
+        }
+      } catch (err) {
+        out.innerHTML = `<div class="alert-box alert-danger">Graph Error: ${err.message}</div>`;
+      }
+    }
+
+    async function runRippleSearch() {
+      const herb = document.getElementById('graphHerb').value;
+      const out = document.getElementById('graphOutput');
+
+      try {
+        const resp = await fetch('/api/graph/ripple', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({entity: herb, depth: 2})
+        });
+        const data = await resp.json();
+
+        let ripplesHtml = `<h4 style="margin:10px 0 6px;">Multi-Hop Network Ripple for ${data.root_entity}:</h4>`;
+        ripplesHtml += `<p style="font-size:12px; color:var(--muted);">Direct Collisions: ${data.direct_count} | 2-Hop Connected Entities: ${data.two_hop_count}</p>`;
+
+        if (data.two_hop_ripples && data.two_hop_ripples.length > 0) {
+          ripplesHtml += '<div style="max-height:160px; overflow-y:auto; margin-top:8px;">';
+          data.two_hop_ripples.forEach(r => {
+            ripplesHtml += `
+              <div style="font-size:12px; padding:5px 0; border-bottom:1px solid #e5e7eb;">
+                <strong>${r.distant_entity_name || r.distant_entity}</strong> — bridged via <em>${r.bridged_via}</em> [${r.shared_pathway}]
+              </div>
+            `;
+          });
+          ripplesHtml += '</div>';
+        }
+
+        out.innerHTML = `
+          <div style="background:#fff; border:1px solid #dcded3; border-radius:10px; padding:14px;">
+            ${ripplesHtml}
+          </div>
+        `;
+      } catch (err) {
+        out.innerHTML = `<div class="alert-box alert-danger">Ripple Search Error: ${err.message}</div>`;
+      }
+    }
+
+    async function loadCatalogAudit() {
+      const out = document.getElementById('graphOutput');
+      out.innerHTML = '<p style="color:var(--muted);">Loading 10x10 catalog audit manifest...</p>';
+      try {
+        const resp = await fetch('/api/graph/audit');
+        const data = await resp.json();
+
+        let html = `
+          <h4 style="margin-top:0;">Herb-Drug Knowledge Base Audit (10x10 Matrix & Catalog)</h4>
+          <div style="background:#eef7f0; border:1px solid #b7e0c2; border-radius:8px; padding:10px 14px; margin-bottom:10px; font-size:12px;">
+            <strong>10x10 Matrix Audit:</strong> ${data.matrix_reviewed_count || data.source_reviewed_count} / ${data.total_matrix_pairs || 100} pairs with verified literature evidence.<br>
+            <strong>Remaining Matrix Pairs:</strong> ${data.matrix_pending_count || data.unverified_or_pending_count} / ${data.total_matrix_pairs || 100} pairs flagged as <code>review_pending</code> (Golden Safety Invariant: NEVER marked 'safe' or severity 'none').<br>
+            <strong>Total Literature-Curated Interactions in Engine:</strong> ${data.total_interactions_audited} curated records (${data.source_reviewed_count} source-reviewed).
+          </div>
+          <div style="max-height:220px; overflow-y:auto; margin-top:8px;">
+            <table class="data-table" style="font-size:11px;">
+              <thead>
+                <tr>
+                  <th>Herb</th>
+                  <th>Drug</th>
+                  <th>10x10</th>
+                  <th>Evidence Type</th>
+                  <th>Study Population</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+        data.curated_records.forEach(r => {
+          html += `
+            <tr>
+              <td><strong>${r.herb}</strong></td>
+              <td>${r.drug}</td>
+              <td>${r.in_10x10_matrix ? '<span style="color:green;font-weight:700;">Yes</span>' : '<span style="color:#6b7280;">Ref</span>'}</td>
+              <td>${r.evidence_type}</td>
+              <td>${r.study_population}</td>
+              <td><span style="color:${r.review_status === 'source_reviewed' ? 'green':'#b45309'};font-weight:600;">${r.review_status}</span></td>
+            </tr>
+          `;
+        });
+        html += '</tbody></table></div>';
+        out.innerHTML = html;
+      } catch (err) {
+        out.innerHTML = `<div class="alert-box alert-danger">Audit Error: ${err.message}</div>`;
+      }
+    }
+
+    async function loadCatalogTopology() {
+      try {
+        const resp = await fetch('/api/graph/catalog');
+        const data = await resp.json();
+        const tbl = document.getElementById('pagerankTable');
+        let html = `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Catalog Entity</th>
+                <th>Type</th>
+                <th>PageRank Hubness Centrality</th>
+                <th>Topological Significance</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        data.top_pagerank_centrality.forEach((row, i) => {
+          html += `
+            <tr>
+              <td><strong>${row.entity_id}</strong></td>
+              <td>${row.type.toUpperCase()}</td>
+              <td><code>${row.pagerank}</code></td>
+              <td>${i < 3 ? 'Major Network Hub' : 'Connected Node'}</td>
+            </tr>
+          `;
+        });
+        html += '</tbody></table>';
+        tbl.innerHTML = html;
+      } catch (err) {
+        document.getElementById('pagerankTable').innerHTML = 'Topology failed to load.';
+      }
+    }
+
+    // Panel 4: TPSM Simulation (Mode Switcher)
+    function switchTpsmMode(mode) {
+      const btnHuman = document.getElementById('subTabHuman');
+      const btnSynthetic = document.getElementById('subTabSynthetic');
+      const secHuman = document.getElementById('tpsmHumanSection');
+      const secSynthetic = document.getElementById('tpsmSyntheticSection');
+
+      if (mode === 'human') {
+        btnHuman.classList.add('active');
+        btnSynthetic.classList.remove('active');
+        secHuman.style.display = 'block';
+        secSynthetic.style.display = 'none';
+        runHumanStudyDemo();
+      } else {
+        btnSynthetic.classList.add('active');
+        btnHuman.classList.remove('active');
+        secSynthetic.style.display = 'block';
+        secHuman.style.display = 'none';
+        runTpsmSimulation();
+      }
+    }
+
+    async function runHumanStudyDemo() {
+      const studyId = document.getElementById('humanStudySelect').value;
+      const out = document.getElementById('humanStudyOutput');
+      out.innerHTML = '<p style="color:var(--muted);">Loading published human study demonstration...</p>';
+
+      try {
+        const resp = await fetch('/api/tpsm/human_study', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({study_id: studyId})
+        });
+        const data = await resp.json();
+
+        let compTable = `
+          <table class="data-table" style="margin-top:12px;">
+            <thead>
+              <tr>
+                <th>Pharmacokinetic Metric</th>
+                <th>MEASURED CLINICAL OBSERVATION (${data.study_label})</th>
+                <th>MODEL ESTIMATE (${data.model_label})</th>
+                <th>Scientific Concordance</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        data.empirical_vs_model_comparison.forEach(r => {
+          compTable += `
+            <tr>
+              <td><strong>${r.parameter}</strong></td>
+              <td style="color:#1e3a8a; font-weight:600;">${r.measured_observation}</td>
+              <td style="color:#183e36;">${r.model_generated_estimate}</td>
+              <td style="font-size:12px;">${r.concordance}</td>
+            </tr>
+          `;
+        });
+        compTable += '</tbody></table>';
+
+        out.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <h3 style="margin:0; color:var(--primary); font-size:18px;">${data.study_title}</h3>
+            <span class="metric-badge badge-clinical">${data.study_label}</span>
+          </div>
+          <p style="font-size:12px; color:var(--muted); margin:4px 0 8px;">
+            <strong>Citation:</strong> ${data.citation} | <strong>PubMed:</strong> ${data.pubmed_id}
+          </p>
+          <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px 14px; font-size:13px; margin-bottom:12px;">
+            <strong>Study Design &amp; Population:</strong> ${data.study_design} (${data.study_population})<br>
+            <strong>Administered Regimen:</strong> ${data.administered_regimen}
+          </div>
+          ${compTable}
+          <div class="disclaimer-banner" style="margin-top:14px; margin-bottom:0;">
+            ${data.educational_notice}
+          </div>
+        `;
+      } catch (err) {
+        out.innerHTML = `<div class="alert-box alert-danger">Error: ${err.message}</div>`;
+      }
+    }
+
+    // Panel 4: Synthetic ODE Simulation & SVG Charting
+    function updateDrugDefaults() {
+      const d = document.getElementById('tpsmDrug').value;
+      const dose = document.getElementById('tpsmDose');
+      if (d === 'warfarin') dose.value = '5.0';
+      else if (d === 'digoxin') dose.value = '0.25';
+      else if (d === 'midazolam') dose.value = '7.5';
+      else if (d === 'metoprolol') dose.value = '50.0';
+      else if (d === 'atorvastatin') dose.value = '20.0';
+    }
+
+    async function runTpsmSimulation() {
+      const drug_id = document.getElementById('tpsmDrug').value;
+      const herb_id = document.getElementById('tpsmHerb').value;
+      const dose_mg = parseFloat(document.getElementById('tpsmDose').value);
+      const window_hours = parseFloat(document.getElementById('tpsmHours').value);
+      const metricsOut = document.getElementById('tpsmMetrics');
+
+      try {
+        const resp = await fetch('/api/tpsm/simulate', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({drug_id, herb_id, dose_mg, window_hours})
+        });
+        const data = await resp.json();
+
+        if (data.error) {
+          metricsOut.innerHTML = `<div class="alert-box alert-danger">${data.error}</div>`;
+          return;
+        }
+
+        const b = data.baseline;
+        const m = data.modulated;
+        const c = data.comparative_metrics;
+
+        let statusClass = 'alert-success';
+        if (c.therapeutic_status.includes('TOXIC')) statusClass = 'alert-danger';
+        else if (c.therapeutic_status.includes('SUBTHERAPEUTIC')) statusClass = 'alert-warning';
+
+        metricsOut.innerHTML = `
+          <h3 style="font-size:18px; margin-top:0; color:var(--primary);">Pharmacokinetic Simulation Shifts</h3>
+          <div class="result-stat">
+            <span>Peak Concentration (Cmax):</span>
+            <span><strong>${m.c_max_mg_l} mg/L</strong> <small style="color:${c.delta_c_max_pct >= 0 ? '#b3261e':'#183e36'}">(${c.delta_c_max_pct > 0 ? '+' : ''}${c.delta_c_max_pct}%)</small></span>
+          </div>
+          <div class="result-stat">
+            <span>Exposure Area (AUC 0-${window_hours}h):</span>
+            <span><strong>${m.auc_0_t_mg_h_l} mg·h/L</strong> <small style="color:${c.delta_auc_pct >= 0 ? '#b3261e':'#183e36'}">(${c.delta_auc_pct > 0 ? '+' : ''}${c.delta_auc_pct}%)</small></span>
+          </div>
+          <div class="result-stat">
+            <span>Elimination Half-life (t½):</span>
+            <span>Mod: ${m.half_life_hours}h vs Base: ${b.half_life_hours}h</span>
+          </div>
+          <div class="result-stat">
+            <span>Numerical Integrator:</span>
+            <span>RK4 (Truncation error: <code>${data.numerical_verification.max_truncation_error}</code>)</span>
+          </div>
+
+          <div class="alert-box ${statusClass}" style="margin-top:14px;">
+            <strong>Therapeutic Status:</strong> ${c.therapeutic_status}<br>
+            <span style="font-size:12px;">${c.clinical_risk_alert}</span>
+          </div>
+        `;
+
+        renderSvgChart(b.trajectory, m.trajectory, data.drug.mtc_mg_l, window_hours);
+      } catch (err) {
+        metricsOut.innerHTML = `<div class="alert-box alert-danger">Simulation Error: ${err.message}</div>`;
+      }
+    }
+
+    function renderSvgChart(basePts, modPts, mtc, maxT) {
+      const svg = document.getElementById('pkChart');
+      svg.innerHTML = '';
+
+      let maxConc = 0.0;
+      basePts.forEach(p => { if (p.concentration_mg_l > maxConc) maxConc = p.concentration_mg_l; });
+      modPts.forEach(p => { if (p.concentration_mg_l > maxConc) maxConc = p.concentration_mg_l; });
+      if (mtc && mtc > maxConc) maxConc = mtc;
+      maxConc = maxConc * 1.15;
+
+      const w = 800;
+      const h = 280;
+      const padL = 60;
+      const padR = 25;
+      const padT = 20;
+      const padB = 40;
+
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+
+      const scaleX = t => padL + (t / maxT) * plotW;
+      const scaleY = c => padT + plotH - (c / maxConc) * plotH;
+
+      let gridSvg = `<line x1="${padL}" y1="${padT + plotH}" x2="${w - padR}" y2="${padT + plotH}" stroke="#dcded3" stroke-width="2"/>`;
+      gridSvg += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + plotH}" stroke="#dcded3" stroke-width="2"/>`;
+
+      const tTicks = 6;
+      for (let i = 0; i <= tTicks; i++) {
+        const val = (maxT / tTicks) * i;
+        const x = scaleX(val);
+        gridSvg += `<line x1="${x}" y1="${padT + plotH}" x2="${x}" y2="${padT + plotH + 5}" stroke="#999"/>`;
+        gridSvg += `<text x="${x}" y="${padT + plotH + 20}" font-size="11" fill="#666" text-anchor="middle">${val.toFixed(0)}h</text>`;
+      }
+
+      const cTicks = 4;
+      for (let i = 0; i <= cTicks; i++) {
+        const val = (maxConc / cTicks) * i;
+        const y = scaleY(val);
+        gridSvg += `<line x1="${padL - 5}" y1="${y}" x2="${padL}" y2="${y}" stroke="#999"/>`;
+        gridSvg += `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="#f0f2eb" stroke-dasharray="2,2"/>`;
+        gridSvg += `<text x="${padL - 10}" y="${y + 4}" font-size="10" fill="#666" text-anchor="end">${val.toFixed(3)}</text>`;
+      }
+
+      let mtcSvg = '';
+      if (mtc) {
+        const mtcY = scaleY(mtc);
+        mtcSvg = `
+          <line x1="${padL}" y1="${mtcY}" x2="${w - padR}" y2="${mtcY}" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4,4"/>
+          <text x="${w - padR - 5}" y="${mtcY - 5}" font-size="11" fill="#d97706" text-anchor="end" font-weight="600">Toxic Threshold (MTC: ${mtc})</text>
+        `;
+      }
+
+      const toPath = pts => pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(p.t_hours).toFixed(1)} ${scaleY(p.concentration_mg_l).toFixed(1)}`).join(' ');
+
+      const basePath = `<path d="${toPath(basePts)}" fill="none" stroke="#183e36" stroke-width="3" stroke-linecap="round"/>`;
+      const modPath = `<path d="${toPath(modPts)}" fill="none" stroke="#b3261e" stroke-width="3" stroke-linecap="round"/>`;
+
+      svg.innerHTML = gridSvg + mtcSvg + basePath + modPath;
+    }
+
+    // Auto-run initial previews on load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadCatalogTopology();
+      runCalculator();
+      runCollisionCheck();
+      runHumanStudyDemo();
+    });
+  </script>
+</body>
+</html>
