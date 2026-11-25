@@ -117,62 +117,129 @@ function closeNav() { document.body.classList.remove("open"); }
 $("menu").onclick = () => document.body.classList.add("open");
 $("shade").onclick = closeNav;
 
-const DEFAULT_TUNNEL_URL = "https://bench-initiatives-arthur-exams.trycloudflare.com";
+const DEFAULT_TUNNEL_URL = "https://menus-cannon-fig-relations.trycloudflare.com";
+let DYNAMIC_TUNNEL_URL = null;
+let MEMORY_TOKEN = null;
+
+function getStoredToken() {
+  try {
+    return localStorage.getItem("bs_token") || sessionStorage.getItem("bs_token") || MEMORY_TOKEN;
+  } catch (e) {
+    return MEMORY_TOKEN;
+  }
+}
+
+function setStoredToken(tok) {
+  MEMORY_TOKEN = tok || null;
+  try {
+    if (tok) {
+      localStorage.setItem("bs_token", tok);
+      sessionStorage.setItem("bs_token", tok);
+    } else {
+      localStorage.removeItem("bs_token");
+      sessionStorage.removeItem("bs_token");
+    }
+  } catch (e) {}
+}
+
+async function resolveDynamicBackendUrl() {
+  const host = window.location.hostname || "";
+  if (!(host.includes("github.io") || host.includes("vercel.app"))) {
+    return "";
+  }
+  try {
+    const r = await fetch("./backend_url.json?t=" + Date.now(), { cache: "no-store" });
+    if (r.ok) {
+      const cfg = await r.json();
+      if (cfg && typeof cfg.apiUrl === "string" && cfg.apiUrl.trim().startsWith("http")) {
+        DYNAMIC_TUNNEL_URL = cfg.apiUrl.trim().replace(/\/+$/, "");
+        return DYNAMIC_TUNNEL_URL;
+      }
+    }
+  } catch (e) {}
+  return DYNAMIC_TUNNEL_URL || DEFAULT_TUNNEL_URL;
+}
 
 function getApiBase() {
   if (window.BIOSENTRY_API_BASE) {
     return window.BIOSENTRY_API_BASE.replace(/\/+$/, "");
   }
-  const stored = localStorage.getItem("biosentry_api_url");
-  if (stored) {
-    return stored.trim().replace(/\/+$/, "");
-  }
+  try {
+    const stored = localStorage.getItem("biosentry_api_url");
+    if (stored) {
+      return stored.trim().replace(/\/+$/, "");
+    }
+  } catch (e) {}
   const host = window.location.hostname || "";
   if (host.includes("github.io") || host.includes("vercel.app")) {
-    return DEFAULT_TUNNEL_URL;
+    return DYNAMIC_TUNNEL_URL || DEFAULT_TUNNEL_URL;
   }
   return "";
 }
 
 window.setBackendUrl = function(url) {
-  if (!url) {
-    localStorage.removeItem("biosentry_api_url");
-  } else {
-    localStorage.setItem("biosentry_api_url", url.trim());
-  }
+  try {
+    if (!url) {
+      localStorage.removeItem("biosentry_api_url");
+    } else {
+      localStorage.setItem("biosentry_api_url", url.trim());
+    }
+  } catch (e) {}
   window.location.reload();
 };
 
 async function api(route, data, signal) {
-  const base = getApiBase();
-  const url = (base ? base : "") + "/api/" + route;
-  const token = localStorage.getItem("bs_token") || sessionStorage.getItem("bs_token");
-  const headers = data ? {"Content-Type": "application/json"} : {};
-  if (token) {
-    headers["Authorization"] = "Bearer " + token;
+  const performFetch = async (baseUrl) => {
+    const url = (baseUrl ? baseUrl : "") + "/api/" + route;
+    const token = getStoredToken();
+    const headers = data ? {"Content-Type": "application/json"} : {};
+    if (token) {
+      headers["Authorization"] = "Bearer " + token;
+    }
+    return await fetch(url, {
+      signal,
+      method: data ? "POST" : "GET",
+      headers,
+      credentials: "include",
+      body: data ? JSON.stringify(data) : undefined
+    });
+  };
+
+  let base = getApiBase();
+  let r;
+  try {
+    r = await performFetch(base);
+  } catch (netErr) {
+    if (netErr && netErr.name === "AbortError") throw netErr;
+    const prevBase = base;
+    const refreshed = await resolveDynamicBackendUrl();
+    if (refreshed && refreshed !== prevBase) {
+      try { localStorage.removeItem("biosentry_api_url"); } catch (e) {}
+      try {
+        r = await performFetch(refreshed);
+      } catch (retryErr) {
+        if (retryErr && retryErr.name === "AbortError") throw retryErr;
+        throw Error("Unable to reach BioSentry AI server (" + refreshed + "). Please verify the backend tunnel is active.");
+      }
+    } else {
+      throw Error("Unable to connect to BioSentry AI server. Please check your connection or verify the backend server is running.");
+    }
   }
-  const r = await fetch(url, {
-    signal,
-    method: data ? "POST" : "GET",
-    headers,
-    credentials: "include",
-    body: data ? JSON.stringify(data) : undefined
-  });
-  const j = await r.json();
+
+  let j = {};
+  try {
+    j = await r.json();
+  } catch (parseErr) {
+    throw Error("Server returned an invalid response (HTTP " + r.status + ").");
+  }
   if (j && j.token) {
-    try {
-      localStorage.setItem("bs_token", j.token);
-      sessionStorage.setItem("bs_token", j.token);
-    } catch (e) {}
+    setStoredToken(j.token);
   }
   if (!r.ok) {
     // If session expired mid-session, reset email state and prompt login
     if (r.status === 401 && j.auth_required) {
       email = null;
-      try {
-        localStorage.removeItem("bs_token");
-        sessionStorage.removeItem("bs_token");
-      } catch (e) {}
+      setStoredToken(null);
       auth(false);
     }
     // If onboarding is incomplete, trigger onboarding wizard
@@ -1588,9 +1655,8 @@ function auth(signup = false) {
       }),
       button("Sign out", async () => {
         try { await api("logout", {}); } catch {}
+        setStoredToken(null);
         try {
-          localStorage.removeItem("bs_token");
-          sessionStorage.removeItem("bs_token");
           sessionStorage.removeItem("biosentry-guest");
         } catch (e) {}
         email = null;
@@ -1608,12 +1674,14 @@ function auth(signup = false) {
   const mail = node("input");
   mail.type = "email";
   mail.required = true;
+  mail.placeholder = "name@example.com";
   l1.append(mail);
   const l2 = node("label", "Password");
   const pw = node("input");
   pw.type = "password";
   pw.required = true;
-  pw.minLength = 8;
+  pw.minLength = 10;
+  pw.placeholder = "Min. 10 characters";
   l2.append(pw);
   f.append(l1, l2);
   const submit = node("button", signup ? "Create account" : "Sign in", "action");
@@ -1622,9 +1690,10 @@ function auth(signup = false) {
   f.append(submit, error);
   f.onsubmit = async e => {
     e.preventDefault();
+    error.textContent = "";
     submit.disabled = true;
     try {
-      await api(signup ? "signup" : "login", {email: mail.value, password: pw.value});
+      await api(signup ? "signup" : "login", {email: mail.value.trim(), password: pw.value});
       const st = await api("state");
       email = st.email;
       chats = st.chats;
@@ -2034,6 +2103,7 @@ document.querySelectorAll("[data-icon]").forEach(n => {
 
 (async () => {
   try { guest = JSON.parse(sessionStorage.getItem("biosentry-guest") || "[]"); } catch {}
+  await resolveDynamicBackendUrl();
   try {
     const st = await api("state");
     email = st.email;
