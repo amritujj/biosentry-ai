@@ -117,7 +117,7 @@ function closeNav() { document.body.classList.remove("open"); }
 $("menu").onclick = () => document.body.classList.add("open");
 $("shade").onclick = closeNav;
 
-const DEFAULT_TUNNEL_URL = "https://menus-cannon-fig-relations.trycloudflare.com";
+const DEFAULT_TUNNEL_URL = "https://jump-equipment-pontiac-medications.trycloudflare.com";
 let DYNAMIC_TUNNEL_URL = null;
 let MEMORY_TOKEN = null;
 
